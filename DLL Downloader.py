@@ -30,10 +30,11 @@ def fence():
 def download_file(url):
     from urllib import request
     try:
-        with request.urlopen(url,timeout=5) as web:
+        with request.urlopen(url,timeout=10) as web:
             with open("down.zip", 'wb') as outfile:
                 outfile.write(web.read())
     except BaseException:
+        print("下载失败，请手动下载\n下载链接：" + download_link)
         print("请检查你的网络！")
         wrong()
 
@@ -41,7 +42,7 @@ def catch(web):
     try:
         html_doc = web
         req = urllib.request.Request(html_doc)
-        webpage = urllib.request.urlopen(req,timeout=5)
+        webpage = urllib.request.urlopen(req,timeout=10)
         html = str(webpage.read())
         return str(html)
     except BaseException:
@@ -129,7 +130,7 @@ for i in range(int(len(des_list))):
         say = "编号：" + str(i + 1) + " -----> " + "位数支持：" + bit_list[i] + "       描述：" + des_list[i]
     print("\n" + say)
 
-print("\n")
+print()
 fence()
 while True:
     down = int(input("请输入您要下载的位数编号："))
