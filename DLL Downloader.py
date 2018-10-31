@@ -27,16 +27,16 @@ def fence():
 # os.system("cls")
 
 
+
 def download_file(url):
     from urllib import request
-    try:
-        with request.urlopen(url,timeout=10) as web:
-            with open("down.zip", 'wb') as outfile:
-                outfile.write(web.read())
-    except BaseException:
-        print("下载失败，请手动下载\n下载链接：" + download_link)
-        print("请检查你的网络！")
-        wrong()
+    def Schedule(a, b, c):
+        per = 100.0 * a * b / c
+        if per > 100:
+            per = 100
+        print('已下载：' + '%.2f%%' % per + "\r",end = '')
+
+    request.urlretrieve(url, ".\\down", Schedule)
 
 def catch(web):
     try:
@@ -46,9 +46,13 @@ def catch(web):
         html = str(webpage.read())
         return str(html)
     except BaseException:
-        print("请检查你的网络！")
+        print("抓取错误！  请检查你的网络！")
         wrong()
 
+os.system("del /s /q *.dll")
+os.system("del /s /q down")
+os.system("del /s /q down.zip")
+os.system("cls")
 print("        DLL 下载器 -- By Wyatt Huang")
 os.system("")
 fence()
@@ -154,14 +158,18 @@ download_link = "https://download.dll-files.com/" + re.findall(re_down_c, html)[
 try:
     download_file(download_link)
     time.sleep(1)
+    os.system("rename down down.zip")
     f = zipfile.ZipFile("down.zip", 'r')
     for file in f.namelist():
         f.extract(file, ".\\")
     f.close()
 
     os.system("del /s /q README.txt")
-    os.system("del /s /q *.zip")
+    os.system("del /s /q down.zip")
     os.system("color 27")
+    time.sleep(1)
+    os.system("color 07")
+    # Windows\System32
     say = download_dll + " 下载成功！"
     print(say)
     input()
