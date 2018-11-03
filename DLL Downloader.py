@@ -1,8 +1,11 @@
 # -*- coding: gb2312 -*-
 # code by Wyatt Huang
 # 52pojie forum
+
+
 import urllib.request,re,os,zipfile,time
 
+# 程序出错的话
 def wrong():
     import os,time
     time.sleep(1)
@@ -13,11 +16,6 @@ def wrong():
     input()
     os._exit(0)
 
-def sys_say(i,slogan):
-    import os
-    code = "mshta vbscript:msgbox(\"" + i + "\",64,\"""" + slogan + "\")(window.close)"
-    os.system(code)
-
 def fence():
     print("===========================================")
 
@@ -26,18 +24,26 @@ def fence():
 # os.system(cmd)
 # os.system("cls")
 
-
-
-def download_file(url):
-    from urllib import request
-    def Schedule(a, b, c):
-        per = 100.0 * a * b / c
-        if per > 100:
-            per = 100
+# 下载进度显示
+def Schedule(a, b, c):
+    per = 100.0 * a * b / c
+    if per > 100:
+        per = 100
+    if per < 100:
         print('已下载：' + '%.2f%%' % per + "\r",end = '')
+    else:
+        print('已下载：100%')
 
-    request.urlretrieve(url, ".\\down", Schedule)
+# 下载文件
+def download_file(url):
+    try:
+        os.system("md DLL_downloader_working_place")
+        urllib.request.urlretrieve(url, "DLL_downloader_working_place\\down_dll_temp.zip", Schedule)
+    except BaseException:
+        os.system("del /s /q DLL_downloader_working_place")
+        os.system("rd DLL_downloader_working_place")
 
+# 抓取网页源代码
 def catch(web):
     try:
         html_doc = web
@@ -49,25 +55,29 @@ def catch(web):
         print("抓取错误！  请检查你的网络！")
         wrong()
 
-os.system("del /s /q *.dll")
-os.system("del /s /q down")
-os.system("del /s /q down.zip")
+# 开始
+# 删除DLL下载器生产的暂时文件夹
+os.system("del /s /q DLL_downloader_working_place")
+os.system("rd DLL_downloader_working_place")
 os.system("cls")
 print("        DLL 下载器 -- By Wyatt Huang")
-os.system("")
 fence()
 resource = []
 inp = input("请输入DLL名称(如 qt5.dll)：")
 fence()
+
+# 规范输入格式
 try:
     inp.split(".dll")[1]
 except IndexError:
     inp = inp + ".dll"
 str(inp)
 
+# 抓取资源网页源码
 web = 'https://cn.dll-files.com/search/?q=' + inp.split(".")[0]
 html = catch(web)
 
+# 匹配有效的DLL文件
 re_c = r'<td><a href=(.{90})'
 wordreg = re.compile(re_c)
 _list = re.findall(wordreg, html)
@@ -80,6 +90,8 @@ if len(resource) == 0:
     wrong()
 else:
     print("\n成功！  找到以下资源：\n")
+
+    # 分配编号
     count = 0
     for i in resource:
         count = count + 1
@@ -88,6 +100,7 @@ else:
         else:
             print("编号：" + str(count) + " -----> " + i + "\n")
 fence()
+
 while True:
     down = int(input("请输入您要下载的DLL编号："))
     fence()
@@ -101,11 +114,15 @@ while True:
         print("输入的编号范围错误,请重新输入！")
         continue
 
+# 爬取指定DLL的详情页
 html_download = catch('https://cn.dll-files.com/' + download_dll + '.html')
+
 # href="/download/
 # class="bit"
 # class="zip-size"
 # class="description"
+
+# 匹配DLL的信息： description 和 bit information
 re_c_bit = r'class="bit"(.{10})'
 re_c_des = r'<td class="description" title="(.{90})'
 re_c_link = r'href="/download/(.{90})'
@@ -116,6 +133,7 @@ bit = re.findall(re_bit,html_download)
 des = re.findall(re_des,html_download)
 link = re.findall(re_link,html_download)
 
+# 信息导入列表
 bit_list = []
 des_list = []
 link_list = []
@@ -148,32 +166,41 @@ while True:
         print("输入的编号范围错误,请重新输入！")
         continue
 fence()
+
+# 爬取下载地址
 print("开始下载DLL: " + download_dll)
+print("正在获取下载地址。。。")
 html = catch(download)
+print("获取成功！")
 # href="https://download.dll-files.com/
 
+# 匹配下载地址
 re_down = r'https://download.dll-files.com/(.{100})'
 re_down_c = re.compile(re_down)
 download_link = "https://download.dll-files.com/" + re.findall(re_down_c, html)[1].split('"')[0]
+
 try:
+    # 开始下载
     download_file(download_link)
-    time.sleep(1)
-    os.system("rename down down.zip")
-    f = zipfile.ZipFile("down.zip", 'r')
+
+    # 解压下载的DLL文件
+    f = zipfile.ZipFile("DLL_downloader_working_place\\down_dll_temp.zip", 'r')
     for file in f.namelist():
-        f.extract(file, ".\\")
+        f.extract(file, "DLL_downloader_working_place\\")
     f.close()
 
-    os.system("del /s /q README.txt")
-    os.system("del /s /q down.zip")
+    # 复制临时文件的DLL到本地
+    os.system('copy DLL_downloader_working_place\\*.dll .\\')
+    # 删除非DLL的文件
+    os.system("del /s /q DLL_downloader_working_place")
+    os.system("rd DLL_downloader_working_place")
     os.system("color 27")
     time.sleep(1)
     os.system("color 07")
     # Windows\System32
-    say = download_dll + " 下载成功！"
-    print(say)
+    print(download_dll + " 下载成功！")
+    print("回车即可退出")
     input()
+
 except BaseException:
     print("下载失败，请手动下载\n下载链接：" + download_link)
-# information["11"] = re.findall(re_size, html)
-# print(information)
