@@ -9,3 +9,4 @@
 2. optimize SC's logicality 
 3. Add comment in SC
 4. Thanks: [52 Pojie Forum](https://www.52pojie.cn/)
+5. Fix the bug that cannot download long-name DLL.

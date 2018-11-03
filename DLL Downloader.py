@@ -124,8 +124,11 @@ html_download = catch('https://cn.dll-files.com/' + download_dll + '.html')
 
 # 匹配DLL的信息： description 和 bit information
 re_c_bit = r'class="bit"(.{10})'
-re_c_des = r'<td class="description" title="(.{90})'
-re_c_link = r'href="/download/(.{90})'
+re_c_des = r'<td class="description" title="(.{100})'
+
+# 2018/11/3 日更新， 针对一些名字较长的DLL，网址爬不完做优化
+re_c_link = r'href="/download/(.{150})'
+
 re_bit = re.compile(re_c_bit)
 re_des = re.compile(re_c_des)
 re_link = re.compile(re_c_link)
@@ -175,9 +178,12 @@ print("获取成功！")
 # href="https://download.dll-files.com/
 
 # 匹配下载地址
-re_down = r'https://download.dll-files.com/(.{100})'
+re_down = r'https://download.dll-files.com/(.{150})'
 re_down_c = re.compile(re_down)
 download_link = "https://download.dll-files.com/" + re.findall(re_down_c, html)[1].split('"')[0]
+
+# for i in re.findall(re_down_c, html):
+#     print(i)
 
 try:
     # 开始下载
@@ -204,3 +210,4 @@ try:
 
 except BaseException:
     print("下载失败，请手动下载\n下载链接：" + download_link)
+    input()
