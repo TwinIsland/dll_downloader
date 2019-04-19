@@ -9,7 +9,8 @@ build:
         - touch "DLL Downloader.py"
     
     artifacts:
-        path ./
+        paths:
+            - ./
 
 test:
     stage: test
