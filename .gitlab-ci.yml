@@ -1,0 +1,15 @@
+stages:
+    - build
+    - test
+    
+build:
+    stage: build
+    script:
+        - echo "Begin to build program"
+        - touch "DLL Downloader.py"
+
+test:
+    stage: test
+    script:
+        - echo "began to test"
+        - test -f " DLL Downloader.py"
