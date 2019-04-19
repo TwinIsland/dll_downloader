@@ -7,6 +7,9 @@ build:
     script:
         - echo "Begin to build program"
         - touch "DLL Downloader.py"
+    
+    artifact:
+        path ./
 
 test:
     stage: test
